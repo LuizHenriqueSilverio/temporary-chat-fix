@@ -1,0 +1,52 @@
+Nesta pasta estão três scripts Python que fiz para recuperar conversas do ChatGPT
+salvas como HTML (fix_savepage.py, inline_assets.py e chat2md.py) e um README.md já
+escrito. Quero transformar isso num repositório git bem cuidado. Leia os quatro
+arquivos antes de começar.
+
+1. Estrutura: mantenha os scripts na raiz, rodáveis com `python3 script.py`. Crie
+   tests/ e tests/fixtures/. Não transforme em pacote instalável por enquanto.
+
+2. Dependências: crie requirements.txt com beautifulsoup4 e lxml. O chat2md usa
+   BeautifulSoup(html, 'lxml'), mas a mensagem de erro só pede beautifulsoup4. Faça-o
+   cair para 'html.parser' quando o lxml não estiver instalado, e rode os testes com
+   os dois parsers.
+
+3. Privacidade: nenhuma conversa real pode entrar no repositório. O .gitignore deve
+   ignorar .html/.htm, pastas *_files/, .bak, *-corrigido.* e *-unico.*, além de uma
+   pasta conversas/ inteira, mas manter tudo em tests/fixtures/. Confirme com
+   git status depois de criar arquivos falsos nesses padrões.
+
+4. Testes com pytest, usando só HTML sintético escrito à mão que imite a marcação do
+   ChatGPT: li[data-message-role], [data-assistant-markdown],
+   [data-user-message-copy], o chip com data-assistant-sources-payload e o atributo
+   data-conversation-document-affinity. Cubra pelo menos:
+   - fix_savepage: detecta e conserta o value= com JSON cru; o resto do arquivo fica
+     byte a byte igual; rodar duas vezes não muda nada; -n devolve código 2 quando
+     há quebrados.
+   - inline_assets: página falsa com pasta _files contendo um css (com url() para uma
+     fonte e um @import), um png, um .js.download, um iframe local e um img com
+     srcset; a saída não referencia mais a pasta, não tem <script>, e um arquivo
+     faltante aparece no relatório.
+   - chat2md: rótulos dos turnos, títulos rebaixados (e --titulos-originais), listas
+     aninhadas, bloco de código com crases dentro, tabela, fontes com utm_ removido,
+     --sem-fontes e a data lida do token.
+   Se algum teste revelar bug, me mostre antes de corrigir.
+
+5. CI: um workflow do GitHub Actions que rode os testes na versão mínima que o README
+   promete (3.10) e na mais recente.
+
+6. CLAUDE.md com as convenções para sessões futuras: comentários e mensagens de
+   terminal em português sem acento (o conteúdo gerado pode ter), argparse,
+   biblioteca padrão sempre que der, nunca usar conversas reais nos testes, como
+   rodar os testes.
+
+7. LICENSE: pergunte qual licença eu quero antes de criar.
+
+8. Confira se os exemplos de uso do README batem com as opções reais de cada script
+   e ajuste o que não bater.
+
+9. Commits pequenos, com mensagens claras. Não crie repositório remoto nem faça push
+   sem perguntar; se eu confirmar, crie como privado com o gh.
+
+Fora o item 2 e o que os testes revelarem, não mude o comportamento dos scripts. Não
+implemente suporte a outros chats ainda; isso vem depois.
